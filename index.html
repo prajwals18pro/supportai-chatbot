@@ -1,124 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupportAI | Smart Customer Support</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupportAI | Intelligent Customer Support</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
-<body>
-
-<header>
+<body><nav class="navbar">
     <div class="logo">✦ SupportAI</div>
-    <nav>
+    <div class="nav-links">
         <a href="#home">Home</a>
         <a href="#features">Features</a>
         <a href="#faq">FAQs</a>
-    </nav>
-    <button class="admin-btn" onclick="showAdmin()">
-        Admin Panel
-    </button>
-</header>
-
-<section class="hero" id="home">
-    <div class="hero-content">
-        <span class="badge">✦ INTELLIGENT CUSTOMER SUPPORT</span>
-
-        <h1>Customer Support,<br>
-        <span>Reimagined with AI.</span></h1>
-
-        <p>
-            Get instant answers, resolve queries and experience
-            smarter customer service with our AI-powered assistant.
-        </p>
-
-        <button onclick="openChat()">Start Conversation →</button>
+        <button class="nav-btn" onclick="openChat()">Get Support</button>
     </div>
+</nav><section class="hero" id="home">
+    <div class="badge">✦ NEXT GENERATION AI SUPPORT</div>
+    <h1>Customer Support,<br><span>Reimagined with AI.</span></h1>
+    <p>Experience intelligent, instant and human-like customer assistance. Get solutions whenever you need them.</p><div class="hero-buttons">
+    <button class="primary-btn" onclick="openChat()">Start Conversation ↗</button>
+    <a class="secondary-btn" href="#features">Explore Features ↓</a>
+</div>
 
-    <div class="hero-card">
-        <div class="bot-icon">🤖</div>
-        <h2>How can I help you?</h2>
-        <p>Your intelligent support assistant is available 24/7.</p>
-        <button onclick="openChat()">Chat with AI</button>
-        <div class="online">● Online and ready to help</div>
+<div class="hero-card">
+    <div class="status"><span></span> AI ASSISTANT ONLINE</div>
+    <h3>How can we help you today?</h3>
+    <p>Our AI assistant is ready to help you.</p>
+    <button onclick="openChat()">Chat with SupportAI →</button>
+</div>
+
+</section><section class="features" id="features">
+    <div class="section-label">WHAT WE OFFER</div>
+    <h2>Everything you need.<br><span>One intelligent assistant.</span></h2><div class="feature-grid">
+    <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>Instant Responses</h3>
+        <p>Get quick answers to your questions without waiting in queues.</p>
     </div>
-</section>
-
-<section class="features" id="features">
-    <h2>Powerful Support Features</h2>
-
-    <div class="feature-grid">
-        <div class="feature">
-            <span>🤖</span>
-            <h3>AI Assistant</h3>
-            <p>Get intelligent responses to customer questions.</p>
-        </div>
-
-        <div class="feature">
-            <span>⚡</span>
-            <h3>Instant Answers</h3>
-            <p>Resolve frequently asked questions instantly.</p>
-        </div>
-
-        <div class="feature">
-            <span>🎫</span>
-            <h3>Ticket Management</h3>
-            <p>Submit and track customer support requests.</p>
-        </div>
-
-        <div class="feature">
-            <span>📊</span>
-            <h3>Admin Dashboard</h3>
-            <p>Manage and monitor customer queries.</p>
-        </div>
+    <div class="feature-card">
+        <div class="icon">🧠</div>
+        <h3>Smart AI</h3>
+        <p>Natural conversations powered by Google's Gemini AI.</p>
     </div>
-</section>
-
-<section class="faq" id="faq">
-    <h2>Frequently Asked Questions</h2>
-    <div id="faq-list"></div>
-</section>
-
-<div class="chat-window" id="chatWindow">
-    <div class="chat-header">
-        <div>
-            <strong>🤖 SupportAI Assistant</strong>
-            <small>● Online</small>
-        </div>
-        <button onclick="closeChat()">✕</button>
+    <div class="feature-card">
+        <div class="icon">🌐</div>
+        <h3>24/7 Availability</h3>
+        <p>Get assistance anytime, from anywhere.</p>
     </div>
-
-    <div class="chat-messages" id="messages">
-        <div class="bot-message">
-            Hello! 👋 Welcome to SupportAI.
-            How can I assist you today?
-        </div>
-    </div>
-
-    <div class="chat-input">
-        <input id="userInput"
-        type="text"
-        placeholder="Type your question..."
-        onkeydown="if(event.key==='Enter') sendMessage()">
-
-        <button onclick="sendMessage()">➤</button>
+    <div class="feature-card">
+        <div class="icon">💬</div>
+        <h3>Multiple Queries</h3>
+        <p>Get help with orders, refunds, payments, delivery and accounts.</p>
     </div>
 </div>
 
-<section id="adminPanel" class="admin-panel" style="display:none">
-    <h2>Customer Query Dashboard</h2>
-    <div id="ticketList"></div>
-    <button onclick="hideAdmin()">Back to Website</button>
-</section>
+</section><section class="faq" id="faq">
+    <div class="section-label">HELP CENTER</div>
+    <h2>Frequently Asked <span>Questions</span></h2><div class="faq-list">
+    <button onclick="askFAQ('How can I track my order?')">📦 How can I track my order? <span>↗</span></button>
+    <button onclick="askFAQ('How do refunds work?')">💰 How do refunds work? <span>↗</span></button>
+    <button onclick="askFAQ('Why did my payment fail?')">💳 Why did my payment fail? <span>↗</span></button>
+    <button onclick="askFAQ('What should I do if my delivery is delayed?')">🚚 What if my delivery is delayed? <span>↗</span></button>
+    <button onclick="askFAQ('How can I reset my account password?')">🔐 How can I reset my password? <span>↗</span></button>
+</div>
 
-<footer>
-    <h3>✦ SupportAI</h3>
-    <p>Making customer support smarter, faster and simpler.</p>
-    <p>© 2026 SupportAI. All rights reserved.</p>
-</footer>
+</section><footer>
+    <div class="logo">✦ SupportAI</div>
+    <p>Smarter conversations. Better customer experiences.</p>
+    <p class="copyright">© 2026 SupportAI. All rights reserved.</p>
+</footer><!-- CHATBOT --><div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <div>
+            <strong>✦ SupportAI</strong>
+            <small><span class="online-dot"></span> AI Assistant Online</small>
+        </div>
+        <button onclick="closeChat()" aria-label="Close chat">✕</button>
+    </div><div class="messages" id="messages">
+    <div class="message bot-message">
+        Hello! 👋 Welcome to SupportAI. How can I help you today?
+    </div>
+</div>
 
-<script src="script.js"></script>
+<div class="chat-input">
+    <input id="userInput" type="text" placeholder="Ask me anything..." maxlength="2000">
+    <button id="sendBtn" onclick="sendMessage()">➤</button>
+</div>
+<div class="chat-footer">Powered by Gemini AI</div>
 
-</body>
+</div><button class="chat-launcher" id="chatLauncher" onclick="openChat()">✦</button>
+
+<script src="script.js"></script></body>
 </html>
