@@ -1,70 +1,72 @@
-// SUPPORTAI - MAIN JAVASCRIPT
+// SUPPORTAI - ADVANCED SYSTEM
 
-let tickets = JSON.parse(localStorage.getItem("supportTickets")) || [];
+let tickets = JSON.parse(
+    localStorage.getItem("supportTickets")
+) || [];
 
 const faqs = [
-    {
-        question: "What is your refund policy?",
-        keywords: ["refund", "money back", "return"],
-        answer: "Our refund policy allows eligible customers to request a refund within 7 days of purchase."
-    },
-    {
-        question: "How can I track my order?",
-        keywords: ["track", "order", "delivery", "shipping"],
-        answer: "You can track your order using your order ID through our order tracking service."
-    },
-    {
-        question: "How can I contact support?",
-        keywords: ["contact", "support", "help", "agent"],
-        answer: "You can contact our support team through this chatbot or submit a support ticket."
-    },
-    {
-        question: "What are your working hours?",
-        keywords: ["hours", "timing", "open", "available"],
-        answer: "Our automated support assistant is available 24/7."
-    },
-    {
-        question: "How do I reset my password?",
-        keywords: ["password", "reset", "login", "forgot"],
-        answer: "Use the Forgot Password option on the login page to reset your password."
-    },
-    {
-        question: "How can I cancel my order?",
-        keywords: ["cancel", "cancellation"],
-        answer: "Please submit your order ID through a support ticket so our team can assist you."
-    }
+{
+question: "What is your refund policy?",
+keywords: ["refund", "money back", "return"],
+answer: "Eligible customers can request a refund within 7 days of purchase."
+},
+{
+question: "How can I track my order?",
+keywords: ["track", "order", "delivery", "shipping"],
+answer: "You can track your order using your order ID."
+},
+{
+question: "How can I contact support?",
+keywords: ["contact", "support", "help", "agent"],
+answer: "You can contact our support team through this chatbot."
+},
+{
+question: "What are your working hours?",
+keywords: ["hours", "timing", "available"],
+answer: "Our automated support assistant is available 24/7."
+},
+{
+question: "How do I reset my password?",
+keywords: ["password", "reset", "login", "forgot"],
+answer: "Use the Forgot Password option to reset your password."
+},
+{
+question: "How can I cancel my order?",
+keywords: ["cancel", "cancellation"],
+answer: "Submit a support ticket with your order ID."
+}
 ];
 
-// FAQ DISPLAY
+// FAQ SYSTEM
 
 function loadFAQs() {
     const list = document.getElementById("faq-list");
-
     list.innerHTML = "";
 
     faqs.forEach(faq => {
-        list.innerHTML += `
-            <div class="faq-item">
-                <h3>${faq.question}</h3>
-                <p>${faq.answer}</p>
-            </div>
-        `;
+        const item = document.createElement("div");
+        item.className = "faq-item";
+
+        const title = document.createElement("h3");
+        title.textContent = faq.question;
+
+        const answer = document.createElement("p");
+        answer.textContent = faq.answer;
+
+        item.append(title, answer);
+        list.appendChild(item);
     });
 }
 
-// OPEN CHAT
+// CHAT SYSTEM
 
 function openChat() {
     document.getElementById("chatWindow").style.display = "flex";
 }
 
-// CLOSE CHAT
-
 function closeChat() {
     document.getElementById("chatWindow").style.display = "none";
 }
-
-// DISPLAY MESSAGE
 
 function addMessage(message, type) {
     const messages = document.getElementById("messages");
@@ -77,7 +79,7 @@ function addMessage(message, type) {
     messages.scrollTop = messages.scrollHeight;
 }
 
-// CREATE SUPPORT TICKET
+// TICKET GENERATION
 
 function createTicket(message) {
 
@@ -90,66 +92,62 @@ function createTicket(message) {
 
     tickets.push(ticket);
 
-    localStorage.setItem(
-        "supportTickets",
-        JSON.stringify(tickets)
-    );
+    saveTickets();
 
     return ticket;
 }
 
-// CHATBOT RESPONSE ENGINE
+function saveTickets() {
+    localStorage.setItem(
+        "supportTickets",
+        JSON.stringify(tickets)
+    );
+}
+
+// CHATBOT ENGINE
 
 function getResponse(message) {
 
     const text = message.toLowerCase();
 
     if (
-        text.includes("complaint") ||
-        text.includes("problem") ||
-        text.includes("issue") ||
-        text.includes("not working") ||
-        text.includes("damaged") ||
-        text.includes("wrong item")
+        ["complaint", "problem", "issue",
+         "not working", "damaged", "wrong item"]
+        .some(word => text.includes(word))
     ) {
-
         const ticket = createTicket(message);
 
-        return "I'm sorry you're facing this issue. I've created a support ticket for you. Your ticket ID is " + ticket.id + ". Our support team can review your request.";
+        return "I'm sorry about this issue! Your support ticket has been generated. Ticket ID: " +
+        ticket.id + ". Our support team can review your request.";
     }
 
     for (const faq of faqs) {
 
-        const match = faq.keywords.some(keyword =>
-            text.includes(keyword)
-        );
-
-        if (match) {
+        if (faq.keywords.some(word => text.includes(word))) {
             return faq.answer;
         }
     }
 
     if (text.includes("hello") || text.includes("hi")) {
-        return "Hello! 👋 Welcome to SupportAI. How can I help you today?";
+        return "Hello! Welcome to SupportAI. How can I help you?";
     }
 
     if (text.includes("thank")) {
-        return "You're welcome! 😊 I'm always happy to help.";
+        return "You're welcome! Happy to help.";
     }
 
     if (text.includes("bye")) {
         return "Goodbye! Have a wonderful day.";
     }
 
-    return "I couldn't find an exact answer to your question. Please describe your issue using the word 'complaint' or 'problem' so I can create a support ticket for you.";
+    return "I couldn't find an exact answer. Please describe your problem or complaint and I can create a support ticket.";
 }
 
-// SEND CHAT MESSAGE
+// SEND MESSAGE
 
 function sendMessage() {
 
     const input = document.getElementById("userInput");
-
     const message = input.value.trim();
 
     if (!message) return;
@@ -159,11 +157,7 @@ function sendMessage() {
     input.value = "";
 
     setTimeout(() => {
-
-        const response = getResponse(message);
-
-        addMessage(response, "bot-message");
-
+        addMessage(getResponse(message), "bot-message");
     }, 500);
 }
 
@@ -173,15 +167,15 @@ function showAdmin() {
 
     document.getElementById("adminPanel").style.display = "block";
 
-    document.getElementById("adminPanel").scrollIntoView({
-        behavior: "smooth"
-    });
-
     document.querySelector(".hero").style.display = "none";
     document.querySelector(".features").style.display = "none";
     document.querySelector(".faq").style.display = "none";
 
     displayTickets();
+
+    document.getElementById("adminPanel").scrollIntoView({
+        behavior: "smooth"
+    });
 }
 
 function hideAdmin() {
@@ -193,7 +187,7 @@ function hideAdmin() {
     document.querySelector(".faq").style.display = "block";
 }
 
-// DISPLAY CUSTOMER TICKETS
+// DASHBOARD STATISTICS
 
 function displayTickets() {
 
@@ -201,19 +195,83 @@ function displayTickets() {
 
     list.innerHTML = "";
 
-    if (tickets.length === 0) {
-        list.innerHTML = "<p>No customer queries received yet.</p>";
+    const total = tickets.length;
+
+    const open = tickets.filter(t => t.status === "Open").length;
+
+    const progress = tickets.filter(
+        t => t.status === "In Progress"
+    ).length;
+
+    const resolved = tickets.filter(
+        t => t.status === "Resolved"
+    ).length;
+
+    const rate = total === 0
+        ? 0
+        : Math.round((resolved / total) * 100);
+
+    // STATISTICS
+
+    const dashboard = document.createElement("div");
+
+    dashboard.className = "feature-grid";
+
+    const stats = [
+        ["📊", "Total Tickets", total],
+        ["🟠", "Open Tickets", open],
+        ["🔵", "In Progress", progress],
+        ["🟢", "Resolved", resolved],
+        ["📈", "Resolution Rate", rate + "%"]
+    ];
+
+    stats.forEach(stat => {
+
+        const card = document.createElement("div");
+        card.className = "feature";
+
+        const icon = document.createElement("span");
+        icon.textContent = stat[0];
+
+        const title = document.createElement("h3");
+        title.textContent = stat[1];
+
+        const value = document.createElement("h2");
+        value.textContent = stat[2];
+
+        card.append(icon, title, value);
+        dashboard.appendChild(card);
+
+    });
+
+    list.appendChild(dashboard);
+
+    // TICKET HEADING
+
+    const heading = document.createElement("h2");
+    heading.textContent = "Customer Support Tickets";
+    heading.style.margin = "30px 0 20px";
+
+    list.appendChild(heading);
+
+    if (total === 0) {
+
+        const empty = document.createElement("p");
+        empty.textContent = "No customer tickets received yet.";
+
+        list.appendChild(empty);
         return;
     }
 
-    tickets.forEach((ticket, index) => {
+    // INDIVIDUAL TICKETS
+
+    tickets.forEach(ticket => {
 
         const card = document.createElement("div");
-
         card.className = "faq-item";
 
-        const heading = document.createElement("h3");
-        heading.textContent = "Ticket: " + ticket.id;
+        const title = document.createElement("h3");
+        title.textContent = "Ticket: " + ticket.id;
 
         const query = document.createElement("p");
         query.textContent = "Customer Query: " + ticket.query;
@@ -224,32 +282,50 @@ function displayTickets() {
         const status = document.createElement("p");
         status.textContent = "Status: " + ticket.status;
 
-        const button = document.createElement("button");
-        button.textContent = "Resolve Ticket";
+        const select = document.createElement("select");
 
-        button.onclick = function() {
+        select.style.padding = "12px";
+        select.style.marginTop = "15px";
+        select.style.background = "#252d48";
+        select.style.color = "white";
+        select.style.borderRadius = "8px";
 
-            tickets[index].status = "Resolved";
+        ["Open", "In Progress", "Resolved"].forEach(value => {
 
-            localStorage.setItem(
-                "supportTickets",
-                JSON.stringify(tickets)
-            );
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
 
+            if (ticket.status === value) {
+                option.selected = true;
+            }
+
+            select.appendChild(option);
+
+        });
+
+        select.onchange = function() {
+
+            ticket.status = select.value;
+
+            saveTickets();
             displayTickets();
+
         };
 
-        card.appendChild(heading);
-        card.appendChild(query);
-        card.appendChild(date);
-        card.appendChild(status);
-        card.appendChild(button);
+        card.append(
+            title,
+            query,
+            date,
+            status,
+            select
+        );
 
         list.appendChild(card);
 
     });
 }
 
-// INITIALIZE WEBSITE
+// INITIALIZE
 
 loadFAQs();
