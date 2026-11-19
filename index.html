@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupportAI | Smart Customer Support</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">✦ SupportAI</div>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#faq">FAQs</a>
+    </nav>
+    <button class="admin-btn" onclick="showAdmin()">
+        Admin Panel
+    </button>
+</header>
+
+<section class="hero" id="home">
+    <div class="hero-content">
+        <span class="badge">✦ INTELLIGENT CUSTOMER SUPPORT</span>
+
+        <h1>Customer Support,<br>
+        <span>Reimagined with AI.</span></h1>
+
+        <p>
+            Get instant answers, resolve queries and experience
+            smarter customer service with our AI-powered assistant.
+        </p>
+
+        <button onclick="openChat()">Start Conversation →</button>
+    </div>
+
+    <div class="hero-card">
+        <div class="bot-icon">🤖</div>
+        <h2>How can I help you?</h2>
+        <p>Your intelligent support assistant is available 24/7.</p>
+        <button onclick="openChat()">Chat with AI</button>
+        <div class="online">● Online and ready to help</div>
+    </div>
+</section>
+
+<section class="features" id="features">
+    <h2>Powerful Support Features</h2>
+
+    <div class="feature-grid">
+        <div class="feature">
+            <span>🤖</span>
+            <h3>AI Assistant</h3>
+            <p>Get intelligent responses to customer questions.</p>
+        </div>
+
+        <div class="feature">
+            <span>⚡</span>
+            <h3>Instant Answers</h3>
+            <p>Resolve frequently asked questions instantly.</p>
+        </div>
+
+        <div class="feature">
+            <span>🎫</span>
+            <h3>Ticket Management</h3>
+            <p>Submit and track customer support requests.</p>
+        </div>
+
+        <div class="feature">
+            <span>📊</span>
+            <h3>Admin Dashboard</h3>
+            <p>Manage and monitor customer queries.</p>
+        </div>
+    </div>
+</section>
+
+<section class="faq" id="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div id="faq-list"></div>
+</section>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <div>
+            <strong>🤖 SupportAI Assistant</strong>
+            <small>● Online</small>
+        </div>
+        <button onclick="closeChat()">✕</button>
+    </div>
+
+    <div class="chat-messages" id="messages">
+        <div class="bot-message">
+            Hello! 👋 Welcome to SupportAI.
+            How can I assist you today?
+        </div>
+    </div>
+
+    <div class="chat-input">
+        <input id="userInput"
+        type="text"
+        placeholder="Type your question..."
+        onkeydown="if(event.key==='Enter') sendMessage()">
+
+        <button onclick="sendMessage()">➤</button>
+    </div>
+</div>
+
+<section id="adminPanel" class="admin-panel" style="display:none">
+    <h2>Customer Query Dashboard</h2>
+    <div id="ticketList"></div>
+    <button onclick="hideAdmin()">Back to Website</button>
+</section>
+
+<footer>
+    <h3>✦ SupportAI</h3>
+    <p>Making customer support smarter, faster and simpler.</p>
+    <p>© 2026 SupportAI. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
