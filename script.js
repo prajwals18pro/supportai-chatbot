@@ -116,9 +116,13 @@ function createTicket(message) {
 
 // COMPLAINT DETECTION
 
+// ADVANCED COMPLAINT DETECTION
+
 function isComplaint(message) {
 
-    const words = [
+    const text = message.toLowerCase();
+
+    const keywords = [
         "complaint",
         "problem",
         "issue",
@@ -126,8 +130,26 @@ function isComplaint(message) {
         "damaged",
         "wrong item",
         "broken",
-        "missing"
+        "missing",
+        "not delivered",
+        "late delivery",
+        "delayed",
+        "not received",
+        "never received",
+        "refund",
+        "cancel my order",
+        "payment failed",
+        "charged twice",
+        "defective",
+        "poor service",
+        "unhappy",
+        "unsatisfied",
+        "return my order",
+        "lost package"
     ];
+
+    return keywords.some(word => text.includes(word));
+}
 
     return words.some(word =>
         message.toLowerCase().includes(word)
