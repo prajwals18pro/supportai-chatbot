@@ -1,447 +1,341 @@
-// SUPPORTAI - GEMINI AI INTEGRATION
+// =====================================
+// SUPPORTAI - MAIN JAVASCRIPT
+// =====================================
 
 const API_URL = "https://supportai-chatbot.onrender.com/chat";
 
-let tickets = JSON.parse(
-    localStorage.getItem("supportTickets") || "[]"
-);
-
 let chatHistory = [];
+let isSending = false;
 
-const faqs = [
-{
-    question: "What is your refund policy?",
-    answer: "Eligible customers can request a refund within 7 days."
-},
-{
-    question: "How can I track my order?",
-    answer: "You can track your order using your order ID."
-},
-{
-    question: "How can I contact support?",
-    answer: "You can contact our support team through this chatbot."
-},
-{
-    question: "What are your working hours?",
-    answer: "Our automated support assistant is available 24/7."
-},
-{
-    question: "How do I reset my password?",
-    answer: "Use the Forgot Password option to reset your password."
-},
-{
-    question: "How can I cancel my order?",
-    answer: "Submit a support ticket with your order ID."
-}
-];
+// Get HTML elements
+const chatWindow = document.getElementById("chatWindow");
+const messagesContainer = document.getElementById("messages");
+const userInput = document.getElementById("userInput");
 
-// FAQ SYSTEM
-
-function loadFAQs() {
-
-    const list = document.getElementById("faq-list");
-
-    list.innerHTML = "";
-
-    faqs.forEach(faq => {
-
-        const item = document.createElement("div");
-        item.className = "faq-item";
-
-        const title = document.createElement("h3");
-        title.textContent = faq.question;
-
-        const answer = document.createElement("p");
-        answer.textContent = faq.answer;
-
-        item.append(title, answer);
-        list.appendChild(item);
-
-    });
-}
-
-// CHAT WINDOW
+// =====================================
+// OPEN CHAT
+// =====================================
 
 function openChat() {
-    document.getElementById("chatWindow").style.display = "flex";
+    if (chatWindow) {
+        chatWindow.style.display = "flex";
+        chatWindow.classList.add("active");
+    }
+
+    if (userInput) {
+        setTimeout(() => userInput.focus(), 200);
+    }
 }
+
+// =====================================
+// CLOSE CHAT
+// =====================================
 
 function closeChat() {
-    document.getElementById("chatWindow").style.display = "none";
+    if (chatWindow) {
+        chatWindow.classList.remove("active");
+        chatWindow.style.display = "none";
+    }
 }
 
-// DISPLAY MESSAGES
+// =====================================
+// ADD MESSAGE
+// =====================================
 
-function addMessage(message, type) {
+function addMessage(text, sender) {
 
-    const messages = document.getElementById("messages");
+    if (!messagesContainer) return;
 
-    const div = document.createElement("div");
+    const message = document.createElement("div");
 
-    div.className = type;
-    div.textContent = message;
+    message.className =
+        sender === "user"
+            ? "message user-message"
+            : "message bot-message";
 
-    messages.appendChild(div);
+    const content = document.createElement("div");
 
-    messages.scrollTop = messages.scrollHeight;
+    content.className = "message-content";
+    content.textContent = text;
 
-    return div;
+    message.appendChild(content);
+    messagesContainer.appendChild(message);
+
+    messagesContainer.scrollTop =
+        messagesContainer.scrollHeight;
 }
 
-// TICKET GENERATION
+// =====================================
+// TYPING INDICATOR
+// =====================================
 
-function createTicket(message) {
+function showTyping() {
 
-    const ticket = {
+    if (!messagesContainer) return;
 
-        id: "SAI-" + Date.now().toString().slice(-8),
+    const typing = document.createElement("div");
 
-        query: message,
+    typing.id = "typingIndicator";
+    typing.className = "message bot-message";
 
-        status: "Open",
+    typing.textContent = "SupportAI is typing...";
 
-        date: new Date().toLocaleString()
+    messagesContainer.appendChild(typing);
 
-    };
-
-    tickets.push(ticket);
-
-    localStorage.setItem(
-        "supportTickets",
-        JSON.stringify(tickets)
-    );
-
-    return ticket;
+    messagesContainer.scrollTop =
+        messagesContainer.scrollHeight;
 }
 
-// COMPLAINT DETECTION
+function hideTyping() {
 
-// ADVANCED COMPLAINT DETECTION
+    const typing =
+        document.getElementById("typingIndicator");
 
-function isComplaint(message) {
-
-    const text = message.toLowerCase();
-
-    const keywords = [
-        "complaint",
-        "problem",
-        "issue",
-        "not working",
-        "damaged",
-        "wrong item",
-        "broken",
-        "missing",
-        "not delivered",
-        "late delivery",
-        "delayed",
-        "not received",
-        "never received",
-        "refund",
-        "cancel my order",
-        "payment failed",
-        "charged twice",
-        "defective",
-        "poor service",
-        "unhappy",
-        "unsatisfied",
-        "return my order",
-        "lost package"
-    ];
-
-    return keywords.some(word => text.includes(word));
+    if (typing) {
+        typing.remove();
+    }
 }
 
-    return words.some(word =>
-        message.toLowerCase().includes(word)
-    );
-}
-
-// GEMINI AI CHAT
+// =====================================
+// GEMINI AI RESPONSE
+// =====================================
 
 async function getAIResponse(message) {
 
-    const response = await fetch(API_URL, {
+    try {
 
-        method: "POST",
+        const response = await fetch(API_URL, {
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+            method: "POST",
 
-        body: JSON.stringify({
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-            message: message,
+            body: JSON.stringify({
 
-            history: chatHistory.slice(-8)
+                message: message,
 
-        })
+                history: chatHistory.slice(-8)
 
-    });
+            })
 
-    if (!response.ok) {
-        throw new Error("AI server error");
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.reply) {
+
+            throw new Error(
+                data.error || "AI response unavailable"
+            );
+
+        }
+
+        return data.reply;
+
+    } catch (error) {
+
+        console.error("SupportAI Error:", error);
+
+        throw error;
+
     }
 
-    const data = await response.json();
-
-    if (!data.success || !data.reply) {
-        throw new Error("Invalid AI response");
-    }
-
-    return data.reply;
 }
 
+// =====================================
 // SEND MESSAGE
+// =====================================
 
 async function sendMessage() {
 
-    const input = document.getElementById("userInput");
+    if (!userInput || isSending) return;
 
-    const message = input.value.trim();
+    const message = userInput.value.trim();
 
     if (!message) return;
 
-    addMessage(message, "user-message");
+    if (message.length > 2000) {
 
-    input.value = "";
+        addMessage(
+            "Please keep your message under 2000 characters.",
+            "assistant"
+        );
 
-    const loading = addMessage(
-        "SupportAI is thinking...",
-        "bot-message"
-    );
-
-    let ticket = null;
-
-    if (isComplaint(message)) {
-
-        ticket = createTicket(message);
-
+        return;
     }
+
+    isSending = true;
+
+    userInput.value = "";
+
+    addMessage(message, "user");
+
+    chatHistory.push({
+
+        role: "user",
+        text: message
+
+    });
+
+    showTyping();
 
     try {
 
         const answer = await getAIResponse(message);
 
-        loading.textContent = answer;
+        hideTyping();
 
-        if (ticket) {
+        addMessage(answer, "assistant");
 
-            loading.textContent +=
-                "\n\nYour support ticket ID: " +
-                ticket.id;
+        chatHistory.push({
 
-        }
-
-        chatHistory.push(
-            { role: "user", text: message },
-            { role: "assistant", text: answer }
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        loading.textContent =
-            "Sorry! Our AI assistant is temporarily unavailable. Please try again shortly.";
-
-        if (ticket) {
-
-            loading.textContent +=
-                "\nYour support ticket ID: " + ticket.id;
-
-        }
-
-    }
-
-}
-
-// ADMIN DASHBOARD
-
-function showAdmin() {
-
-    document.getElementById("adminPanel").style.display = "block";
-
-    document.querySelector(".hero").style.display = "none";
-
-    document.querySelector(".features").style.display = "none";
-
-    document.querySelector(".faq").style.display = "none";
-
-    displayTickets();
-
-    document.getElementById("adminPanel").scrollIntoView({
-        behavior: "smooth"
-    });
-
-}
-
-function hideAdmin() {
-
-    document.getElementById("adminPanel").style.display = "none";
-
-    document.querySelector(".hero").style.display = "flex";
-
-    document.querySelector(".features").style.display = "block";
-
-    document.querySelector(".faq").style.display = "block";
-
-}
-
-// ADMIN STATISTICS
-
-function displayTickets() {
-
-    const list = document.getElementById("ticketList");
-
-    list.innerHTML = "";
-
-    const total = tickets.length;
-
-    const open = tickets.filter(
-        t => t.status === "Open"
-    ).length;
-
-    const progress = tickets.filter(
-        t => t.status === "In Progress"
-    ).length;
-
-    const resolved = tickets.filter(
-        t => t.status === "Resolved"
-    ).length;
-
-    const rate = total
-        ? Math.round((resolved / total) * 100)
-        : 0;
-
-    const stats = [
-        ["📊 Total Tickets", total],
-        ["🟠 Open Tickets", open],
-        ["🔵 In Progress", progress],
-        ["🟢 Resolved", resolved],
-        ["📈 Resolution Rate", rate + "%"]
-    ];
-
-    const dashboard = document.createElement("div");
-
-    dashboard.className = "feature-grid";
-
-    stats.forEach(stat => {
-
-        const card = document.createElement("div");
-
-        card.className = "feature";
-
-        const title = document.createElement("h3");
-
-        title.textContent = stat[0];
-
-        const value = document.createElement("h2");
-
-        value.textContent = stat[1];
-
-        card.append(title, value);
-
-        dashboard.appendChild(card);
-
-    });
-
-    list.appendChild(dashboard);
-
-    const heading = document.createElement("h2");
-
-    heading.textContent = "Customer Support Tickets";
-
-    heading.style.margin = "30px 0";
-
-    list.appendChild(heading);
-
-    if (!total) {
-
-        const empty = document.createElement("p");
-
-        empty.textContent = "No customer tickets received yet.";
-
-        list.appendChild(empty);
-
-        return;
-
-    }
-
-    tickets.forEach((ticket, index) => {
-
-        const card = document.createElement("div");
-
-        card.className = "faq-item";
-
-        const title = document.createElement("h3");
-
-        title.textContent = "Ticket: " + ticket.id;
-
-        const query = document.createElement("p");
-
-        query.textContent = "Query: " + ticket.query;
-
-        const date = document.createElement("p");
-
-        date.textContent = "Date: " + ticket.date;
-
-        const status = document.createElement("p");
-
-        status.textContent = "Status: " + ticket.status;
-
-        const select = document.createElement("select");
-
-        select.style.padding = "12px";
-
-        select.style.marginTop = "15px";
-
-        select.style.background = "#252d48";
-
-        select.style.color = "white";
-
-        select.style.borderRadius = "8px";
-
-        ["Open", "In Progress", "Resolved"].forEach(value => {
-
-            const option = document.createElement("option");
-
-            option.value = value;
-
-            option.textContent = value;
-
-            option.selected = ticket.status === value;
-
-            select.appendChild(option);
+            role: "assistant",
+            text: answer
 
         });
 
-        select.onchange = function() {
+        chatHistory = chatHistory.slice(-10);
 
-            tickets[index].status = select.value;
+    } catch (error) {
 
-            localStorage.setItem(
-                "supportTickets",
-                JSON.stringify(tickets)
-            );
+        hideTyping();
 
-            displayTickets();
-
-        };
-
-        card.append(
-            title,
-            query,
-            date,
-            status,
-            select
+        addMessage(
+            "I'm having trouble connecting right now. Please try again in a moment.",
+            "assistant"
         );
 
-        list.appendChild(card);
+    } finally {
 
-    });
+        isSending = false;
+
+        if (userInput) {
+            userInput.focus();
+        }
+
+    }
 
 }
 
-// INITIALIZE
+// =====================================
+// FAQ BUTTONS
+// =====================================
 
-loadFAQs();
+function askFAQ(question) {
+
+    if (!userInput) return;
+
+    userInput.value = question;
+
+    openChat();
+
+    sendMessage();
+
+}
+
+// =====================================
+// ADMIN PANEL
+// =====================================
+
+function toggleAdmin() {
+
+    const panel = document.getElementById("adminPanel");
+
+    if (!panel) return;
+
+    panel.style.display =
+        panel.style.display === "none"
+            ? "block"
+            : "none";
+
+}
+
+function closeAdmin() {
+
+    const panel = document.getElementById("adminPanel");
+
+    if (panel) {
+        panel.style.display = "none";
+    }
+
+}
+
+// =====================================
+// BUTTON EVENT CONNECTIONS
+// =====================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Send button
+    const sendButton = document.getElementById("sendBtn");
+
+    if (sendButton) {
+
+        sendButton.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            sendMessage();
+
+        });
+
+    }
+
+    // Enter key
+    if (userInput) {
+
+        userInput.addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter" && !event.shiftKey) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        });
+
+    }
+
+    // FAQ buttons
+    document.querySelectorAll("[data-question]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            askFAQ(this.dataset.question);
+
+        });
+
+    });
+
+    // Open chat buttons
+    document.querySelectorAll("[data-open-chat]").forEach(button => {
+
+        button.addEventListener("click", openChat);
+
+    });
+
+    // Close chat buttons
+    document.querySelectorAll("[data-close-chat]").forEach(button => {
+
+        button.addEventListener("click", closeChat);
+
+    });
+
+});
+
+// =====================================
+// MAKE FUNCTIONS AVAILABLE TO HTML
+// =====================================
+
+window.openChat = openChat;
+window.closeChat = closeChat;
+window.sendMessage = sendMessage;
+window.addMessage = addMessage;
+window.getAIResponse = getAIResponse;
+window.askFAQ = askFAQ;
+window.toggleAdmin = toggleAdmin;
+window.closeAdmin = closeAdmin;
